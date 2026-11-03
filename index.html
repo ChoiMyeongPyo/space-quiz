@@ -8,18 +8,77 @@
     :root {
       --bg-1: #0b1026;
       --bg-2: #1b1f4b;
-      --card: rgba(255, 255, 255, 0.08);
+      --card: rgba(11, 16, 38, 0.85);
       --card-border: rgba(255, 255, 255, 0.18);
       --text: #f5f7ff;
       --muted: #c3c8ee;
       --accent: #7c5cff;
       --accent-2: #2ec5ff;
-      --correct: #1fbf75;
+      --heading-accent: #b6a5ff;
+      --button-1: #4e35aa;
+      --button-2: #006385;
+      --button-text: #fff;
+      --glow-1: rgba(124, 92, 255, 0.35);
+      --glow-2: rgba(46, 197, 255, 0.25);
+      --surface: rgba(255, 255, 255, 0.06);
+      --hover: rgba(124, 92, 255, 0.25);
+      --progress-track: rgba(255, 255, 255, 0.12);
+      --correct: #5de5a0;
       --correct-bg: #0f5132;
-      --incorrect: #ff5c7a;
+      --incorrect: #ff8aa0;
       --incorrect-bg: #6b1426;
       --focus: #ffd447;
       --radius: 14px;
+      color-scheme: dark;
+    }
+
+    :root[data-theme="launch-pad"] {
+      --bg-1: #20130d;
+      --bg-2: #392318;
+      --card: #302019;
+      --card-border: #96745d;
+      --text: #fff6eb;
+      --muted: #e4c9b2;
+      --accent: #ffa76b;
+      --accent-2: #ffd18a;
+      --heading-accent: #ffa76b;
+      --button-1: #863b15;
+      --button-2: #704600;
+      --glow-1: rgba(255, 167, 107, 0.15);
+      --glow-2: rgba(255, 209, 138, 0.1);
+      --surface: #3e2b20;
+      --hover: #503726;
+      --progress-track: #624533;
+      --correct: #7de6a8;
+      --correct-bg: #17452e;
+      --incorrect: #ff9fa9;
+      --incorrect-bg: #631e2b;
+      --focus: #ffe066;
+    }
+
+    :root[data-theme="lunar"] {
+      --bg-1: #e5e9ef;
+      --bg-2: #cbd3df;
+      --card: #f8fafc;
+      --card-border: #65748b;
+      --text: #192333;
+      --muted: #43526a;
+      --accent: #5140a0;
+      --accent-2: #006584;
+      --heading-accent: #5140a0;
+      --button-1: #5140a0;
+      --button-2: #006584;
+      --glow-1: transparent;
+      --glow-2: transparent;
+      --surface: #edf1f6;
+      --hover: #dce3ee;
+      --progress-track: #d0d8e4;
+      --correct: #166534;
+      --correct-bg: #dcfce7;
+      --incorrect: #a41432;
+      --incorrect-bg: #ffe4e9;
+      --focus: #7040b0;
+      color-scheme: light;
     }
 
     * { box-sizing: border-box; }
@@ -30,8 +89,8 @@
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at 20% 20%, rgba(124, 92, 255, 0.35), transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(46, 197, 255, 0.25), transparent 45%),
+        radial-gradient(circle at 20% 20%, var(--glow-1), transparent 40%),
+        radial-gradient(circle at 80% 70%, var(--glow-2), transparent 45%),
         linear-gradient(160deg, var(--bg-1), var(--bg-2));
       display: flex;
       align-items: center;
@@ -76,13 +135,36 @@
     h1 {
       margin: 0 0 4px;
       font-size: 1.75rem;
-      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      background: linear-gradient(90deg, var(--accent-2), var(--heading-accent));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
 
     .subtitle { margin: 0 0 20px; color: var(--muted); }
+
+    .theme-picker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .theme-picker select {
+      min-width: 0;
+      max-width: 100%;
+      font: inherit;
+      color: var(--text);
+      background: var(--surface);
+      border: 2px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+    }
+
+    .theme-picker option {
+      color: var(--text);
+      background: var(--bg-1);
+    }
 
     .status {
       display: flex;
@@ -97,7 +179,7 @@
 
     .progress {
       height: 12px;
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--progress-track);
       border-radius: 999px;
       overflow: hidden;
       margin-bottom: 24px;
@@ -106,7 +188,7 @@
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      background: linear-gradient(90deg, var(--accent-2), var(--heading-accent));
       border-radius: inherit;
       transition: width 0.4s ease;
     }
@@ -130,7 +212,7 @@
       font: inherit;
       font-size: 1.05rem;
       color: var(--text);
-      background: rgba(255, 255, 255, 0.06);
+      background: var(--surface);
       border: 2px solid var(--card-border);
       border-radius: var(--radius);
       padding: 14px 16px;
@@ -143,7 +225,7 @@
     }
 
     .answer-btn:hover:not(:disabled) {
-      background: rgba(124, 92, 255, 0.25);
+      background: var(--hover);
       border-color: var(--accent);
     }
 
@@ -158,7 +240,8 @@
       box-shadow: 0 0 0 6px rgba(255, 212, 71, 0.3);
     }
 
-    .primary-btn:focus-visible {
+    .primary-btn:focus-visible,
+    .theme-picker select:focus-visible {
       outline: 3px solid var(--focus);
       outline-offset: 3px;
     }
@@ -212,8 +295,8 @@
     .primary-btn {
       font: inherit;
       font-weight: 700;
-      color: #fff;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: var(--button-text);
+      background: linear-gradient(90deg, var(--button-1), var(--button-2));
       border: none;
       border-radius: 999px;
       padding: 12px 24px;
@@ -231,7 +314,7 @@
       font-size: 3rem;
       font-weight: 800;
       margin: 12px 0;
-      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      background: linear-gradient(90deg, var(--accent-2), var(--heading-accent));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -266,7 +349,7 @@
     .review-item {
       padding: 12px 16px;
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.06);
+      background: var(--surface);
       border-left: 6px solid var(--card-border);
     }
 
@@ -300,6 +383,15 @@
   <main>
     <h1>🚀 우주 탐험 퀴즈</h1>
     <p class="subtitle">우주에 대한 지식을 테스트해 보세요 — 총 10문제.</p>
+
+    <div class="theme-picker">
+      <label for="theme-select">테마</label>
+      <select id="theme-select">
+        <option value="deep-space">딥 스페이스 (Deep Space)</option>
+        <option value="launch-pad">발사대 (Launch Pad)</option>
+        <option value="lunar">달 (Lunar)</option>
+      </select>
+    </div>
 
     <section id="quiz" aria-labelledby="question-text">
       <div class="status">
@@ -422,6 +514,37 @@
     let chosen = [];
 
     const BEST_SCORE_KEY = "space-quiz-best-score";
+    const THEME_KEY = "space-quiz-theme";
+    const themeSelect = document.getElementById("theme-select");
+
+    function loadTheme() {
+      try {
+        return localStorage.getItem(THEME_KEY);
+      } catch {
+        return null;
+      }
+    }
+
+    function applyTheme(value) {
+      const validTheme = Array.from(themeSelect.options).some((option) => option.value === value);
+      const theme = validTheme ? value : "deep-space";
+      document.documentElement.dataset.theme = theme;
+      themeSelect.value = theme;
+    }
+
+    function saveTheme(value) {
+      try {
+        localStorage.setItem(THEME_KEY, value);
+      } catch {
+        // 저장할 수 없어도 선택한 테마는 적용됩니다.
+      }
+    }
+
+    applyTheme(loadTheme());
+    themeSelect.addEventListener("change", () => {
+      applyTheme(themeSelect.value);
+      saveTheme(themeSelect.value);
+    });
 
     // 개인정보 보호 모드 등에서는 localStorage 접근 자체가 예외를 던질 수 있습니다.
     function loadBestScore() {

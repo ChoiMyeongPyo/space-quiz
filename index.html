@@ -250,6 +250,9 @@
 
     .review { text-align: left; margin-top: 24px; }
 
+    .best-score { margin: 0 0 8px; font-weight: 600; color: var(--muted); }
+    .best-score.is-new { color: var(--focus); }
+
     .review h3 { margin: 0 0 12px; }
 
     .review-list {
@@ -327,8 +330,9 @@
 
     <section id="results" class="results" hidden aria-labelledby="results-title">
       <div class="rocket" aria-hidden="true">🪐</div>
-      <h2 id="results-title" tabindex="-1">임무 완료!</h2>
+      <h2 id="results-title" tabindex="-1" aria-describedby="final-score best-score">임무 완료!</h2>
       <p class="big-score" id="final-score"></p>
+      <p class="best-score" id="best-score"></p>
       <p id="result-message"></p>
       <div class="review">
         <h3 id="review-title">답안 검토</h3>
@@ -406,6 +410,7 @@
       feedback: document.getElementById("feedback"),
       next: document.getElementById("next-btn"),
       finalScore: document.getElementById("final-score"),
+      bestScore: document.getElementById("best-score"),
       resultMessage: document.getElementById("result-message"),
       resultsTitle: document.getElementById("results-title"),
       restart: document.getElementById("restart-btn"),
@@ -415,6 +420,38 @@
     let current = 0;
     let score = 0;
     let chosen = [];
+
+    const BEST_SCORE_KEY = "space-quiz-best-score";
+
+    // 개인정보 보호 모드 등에서는 localStorage 접근 자체가 예외를 던질 수 있습니다.
+    function loadBestScore() {
+      try {
+        return Number(localStorage.getItem(BEST_SCORE_KEY)) || 0;
+      } catch {
+        return 0;
+      }
+    }
+
+    function saveBestScore(value) {
+      try {
+        localStorage.setItem(BEST_SCORE_KEY, String(value));
+      } catch {
+        // 저장할 수 없어도 퀴즈는 계속 동작합니다.
+      }
+    }
+
+    function renderBestScore() {
+      const previousBest = loadBestScore();
+      const isNewRecord = score > previousBest;
+      const best = isNewRecord ? score : previousBest;
+
+      els.bestScore.textContent = `최고 점수: ${best} / ${questions.length}`;
+      els.bestScore.classList.toggle("is-new", isNewRecord);
+      if (!isNewRecord) return;
+
+      saveBestScore(score);
+      els.bestScore.textContent += " — 🎉 새 최고 기록!";
+    }
 
     function updateProgress(answeredCount) {
       const pct = (answeredCount / questions.length) * 100;
@@ -483,6 +520,7 @@
       else if (ratio >= 0.4) message = "좋은 시도예요! 궤도를 몇 바퀴 더 돌면 전문가가 될 거예요.";
       else message = "모든 우주비행사도 처음은 있었어요 — 다시 도전해 보세요!";
       els.resultMessage.textContent = message;
+      renderBestScore();
       renderReview();
       els.resultsTitle.focus();
     }

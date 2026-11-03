@@ -248,6 +248,32 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
+    .review { text-align: left; margin-top: 24px; }
+
+    .review h3 { margin: 0 0 12px; }
+
+    .review-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .review-item {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.06);
+      border-left: 6px solid var(--card-border);
+    }
+
+    .review-item.is-correct { border-left-color: var(--correct); }
+    .review-item.is-incorrect { border-left-color: var(--incorrect); }
+
+    .review-question { margin: 0 0 4px; font-weight: 600; }
+    .review-answer { margin: 0; color: var(--muted); }
+    .review-mark { font-weight: 700; color: var(--text); }
+
     .visually-hidden {
       position: absolute;
       width: 1px;
@@ -304,6 +330,10 @@
       <h2 id="results-title" tabindex="-1">임무 완료!</h2>
       <p class="big-score" id="final-score"></p>
       <p id="result-message"></p>
+      <div class="review">
+        <h3 id="review-title">답안 검토</h3>
+        <ol class="review-list" id="review-list" aria-labelledby="review-title"></ol>
+      </div>
       <div class="actions" style="justify-content: center;">
         <button type="button" class="primary-btn" id="restart-btn">다시 하기</button>
       </div>
@@ -379,10 +409,12 @@
       resultMessage: document.getElementById("result-message"),
       resultsTitle: document.getElementById("results-title"),
       restart: document.getElementById("restart-btn"),
+      reviewList: document.getElementById("review-list"),
     };
 
     let current = 0;
     let score = 0;
+    let chosen = [];
 
     function updateProgress(answeredCount) {
       const pct = (answeredCount / questions.length) * 100;
@@ -418,6 +450,7 @@
       const item = questions[current];
       const buttons = els.answers.querySelectorAll(".answer-btn");
       buttons.forEach((b) => (b.disabled = true));
+      chosen[current] = index;
 
       if (index === item.answer) {
         score++;
@@ -450,7 +483,41 @@
       else if (ratio >= 0.4) message = "좋은 시도예요! 궤도를 몇 바퀴 더 돌면 전문가가 될 거예요.";
       else message = "모든 우주비행사도 처음은 있었어요 — 다시 도전해 보세요!";
       els.resultMessage.textContent = message;
+      renderReview();
       els.resultsTitle.focus();
+    }
+
+    function createReviewItem(item, chosenIndex, number) {
+      const isCorrect = chosenIndex === item.answer;
+      const li = document.createElement("li");
+      li.className = isCorrect ? "review-item is-correct" : "review-item is-incorrect";
+
+      const question = document.createElement("p");
+      question.className = "review-question";
+      question.textContent = `${number}. ${item.q}`;
+
+      const answer = document.createElement("p");
+      answer.className = "review-answer";
+      answer.textContent = `내 답: ${item.options[chosenIndex]} — `;
+
+      const mark = document.createElement("span");
+      mark.className = "review-mark";
+      mark.textContent = isCorrect ? "✓ 정답" : "✗ 오답";
+      answer.appendChild(mark);
+
+      li.append(question, answer);
+      if (isCorrect) return li;
+
+      const correct = document.createElement("p");
+      correct.className = "review-answer";
+      correct.textContent = `정답: ${item.options[item.answer]}`;
+      li.appendChild(correct);
+      return li;
+    }
+
+    function renderReview() {
+      const items = questions.map((item, i) => createReviewItem(item, chosen[i], i + 1));
+      els.reviewList.replaceChildren(...items);
     }
 
     els.next.addEventListener("click", () => {
@@ -462,6 +529,8 @@
     els.restart.addEventListener("click", () => {
       current = 0;
       score = 0;
+      chosen = [];
+      els.reviewList.replaceChildren();
       els.score.textContent = "0";
       els.results.hidden = true;
       els.quiz.hidden = false;
